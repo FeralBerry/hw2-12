@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${title}"></h1>
+    <table id="calcu">
+        <tr>
+            <td colspan="3">
+                <input type="text" id="result" value="">
+            </td>
+            <td>
+                <input type="button" onclick="addCharacter(this)" class="button" value="c">
+            </td>
+        </tr>
+
+        <tr>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="1"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="2"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="3"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="/"></td>
+        </tr>
+        <tr>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="4"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="5"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="6"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="*"></td>
+        </tr>
+        <tr>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="7"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="8"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="9"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="-"></td>
+        </tr>
+        <tr>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="0"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="с"></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="="></td>
+            <td><input type="button" onclick="addCharacter(this)" class="button" value="+"></td>
+        </tr>
+    </table>
+</div>
+<script src="/js/code.jquery.com_jquery-3.7.1.min.js"></script>
+<script>
+    function addCharacter(btn){
+        if(btn.value !== "c"){
+            document.getElementById("result").value = document.getElementById("result").value + btn.value;
+            if(btn.value === "="){
+                let res = document.getElementById("result").value;
+                let action;
+                let count = (res.match(/\+/g) || []).length + (res.match(/\-/g) || []).length + (res.match(/\*/g) || []).length + (res.match(/\//g) || []).length;
+                if (res.indexOf('-') > -1){
+                    res = res.split('-');
+                    action = "-";
+                }
+                if (res.indexOf('+') > -1){
+                    res = res.split('+');
+                    action = "+";
+                }
+                if (res.indexOf('*') > -1){
+                    res = res.split('*');
+                    action = "*";
+                }
+                if (res.indexOf('/') > -1){
+                    res = res.split('/');
+                    action = "/";
+                }
+                if(count > 1){
+                    alert("Ввели больше 1 арифмитеческого знака");
+                    document.getElementById("result").value = "";
+                } else {
+                    let prefix;
+                    if(action === "-"){
+                        prefix = "minus";
+                    }
+                    if(action === "+"){
+                        prefix = "plus";
+                    }
+                    if(action === "*"){
+                        prefix = "multiply";
+                    }
+                    if(action === "/"){
+                        prefix = "divide";
+                    }
+                    let url = "/calculator/" + prefix + "?num1="+res[0]+"&num2="+res[1].replace(/=/gi, '');
+                    $.ajax({
+                        url: url,
+                        success(data){
+                            document.getElementById("result").value = data;
+                        }
+                    });
+                }
+            }
+        } else {
+            document.getElementById("result").value = "";
+        }
+    }
+</script>
+</body>
+</html>
